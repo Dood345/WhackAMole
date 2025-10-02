@@ -1,10 +1,9 @@
 package com.example.whackamole.controller
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.whackamole.GameController
-import com.example.whackamole.GameModel
-import com.example.whackamole.GameView
 import com.example.whackamole.R
 import com.example.whackamole.repository.real.SharedPrefGameRepository
 import com.example.whackamole.viewmodel.MainViewModel
@@ -31,9 +30,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize MVC components
-        model = GameModel()
-        view = GameView(this)
-        controller = GameController(model, view)
+        val startButton = findViewById<Button>(R.id.start_button)
+        startButton.setOnClickListener {
+            val intent = Intent(this, GameActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
