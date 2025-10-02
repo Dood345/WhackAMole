@@ -1,7 +1,11 @@
-package com.example.whackamole
+package com.example.whackamole.controller
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.whackamole.GameController
+import com.example.whackamole.GameModel
+import com.example.whackamole.GameView
+import com.example.whackamole.R
 
 /**
  * Main activity that initializes and manages the Whack-a-Mole game.
