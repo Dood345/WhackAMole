@@ -15,10 +15,6 @@ import com.example.whackamole.viewmodel.MainViewModel
  */
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var model: GameModel
-    private lateinit var view: GameView
-    private lateinit var controller: GameController
-
     // Sample Initialization of MainViewModel
     private val mainViewModel: MainViewModel by lazy {
         val prefs = getSharedPreferences("WhackAMolePrefs", MODE_PRIVATE)
