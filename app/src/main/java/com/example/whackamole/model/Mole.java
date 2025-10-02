@@ -2,6 +2,8 @@ package com.example.whackamole.model;
 
 /**
  * Immutable data class representing a Mole in the game.
+ *
+ * TODO: Color and Points per mole.
  */
 public final class Mole {
 
