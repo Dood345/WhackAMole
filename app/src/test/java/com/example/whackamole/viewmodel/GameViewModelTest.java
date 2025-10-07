@@ -65,15 +65,19 @@ public class GameViewModelTest {
     @Test
     public void testHitMoleIncrementsScoreAndHighScore() {
         int visibleId = Objects.requireNonNull(gameViewModel.getMoles().getValue()).getVisibleId();
-
+        int expectedPoints = gameViewModel.getMoles().getValue().getMoles().get(visibleId)
+                .getColor().getPoints();
+        
         gameViewModel.hitMole(visibleId);
 
         // Score should be incremented
-        assertEquals(1, Objects.requireNonNull(gameViewModel.getScore().getValue()).intValue());
+        assertEquals(expectedPoints,
+                Objects.requireNonNull(gameViewModel.getScore().getValue()).intValue());
 
         // High score should be updated
-        assertEquals(1, Objects.requireNonNull(gameViewModel.getHighScore().getValue()).intValue());
-        assertEquals(1,
+        assertEquals(expectedPoints,
+                Objects.requireNonNull(gameViewModel.getHighScore().getValue()).intValue());
+        assertEquals(expectedPoints,
                 Objects.requireNonNull(fakeGameRepository.getHighScore().getValue()).intValue());
     }
 

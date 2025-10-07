@@ -1,24 +1,38 @@
 package com.example.whackamole.model;
 
+import androidx.annotation.NonNull;
+
 /**
  * Immutable data class representing a Mole in the game.
- *
- * TODO: Color and Points per mole.
+ * Each mole has an ID, visibility status, and color (which determines points).
  */
 public final class Mole {
 
     private final int id;
     private final boolean visible;
+    private final MoleColor color;
 
     /**
-     * Constructor
+     * Constructor that assigns a random color.
      *
      * @param id      unique identifier for the mole
      * @param visible whether the mole is currently visible
      */
     public Mole(int id, boolean visible) {
+        this(id, visible, MoleColor.randomColor());
+    }
+
+    /**
+     * Constructor that allows explicit color assignment.
+     *
+     * @param id      unique identifier for the mole
+     * @param visible whether the mole is currently visible
+     * @param color   specific MoleColor
+     */
+    public Mole(int id, boolean visible, MoleColor color) {
         this.id = id;
         this.visible = visible;
+        this.color = color;
     }
 
     /**
@@ -39,8 +53,13 @@ public final class Mole {
         return visible;
     }
 
+    public MoleColor getColor() {
+        return color;
+    }
+
     @Override
+    @NonNull
     public String toString() {
-        return "Mole{" + "id=" + id + ", visible=" + visible + '}';
+        return "Mole{" + "id=" + id + ", visible=" + visible + ", color=" + color + '}';
     }
 }

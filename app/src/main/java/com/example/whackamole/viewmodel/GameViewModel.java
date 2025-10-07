@@ -122,7 +122,7 @@ public class GameViewModel extends ViewModel {
         }
 
         // Increment score
-        int newScore = currentScore + 1;
+        int newScore = currentScore + currentMoles.getMoles().get(moleId).getColor().getPoints();
         score.setValue(newScore);
 
         // Update high score if needed
