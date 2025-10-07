@@ -23,6 +23,7 @@ import java.util.Random;
  * - LiveData<Integer> getScore() – current player score
  * - LiveData<Integer> getHighScore() – high score (persisted after destruction of object)
  * - LiveData<Boolean> getGameOver() – game-over state
+ * - LiveData<Integer> getMisses() - current number of misses
  * <p>
  * Public Functions:
  * - void hitMole(int moleId) – register a mole tap
@@ -42,8 +43,8 @@ public class GameViewModel extends ViewModel {
     private final MutableLiveData<Integer> score;
     private final MutableLiveData<Boolean> gameOver;
     private final MutableLiveData<MoleContainer> moles;
+    private final MutableLiveData<Integer> misses;
 
-    private int misses;
     private long currentInterval;
 
     public GameViewModel(GameRepository gameRepository, Scheduler scheduler) {
@@ -63,8 +64,8 @@ public class GameViewModel extends ViewModel {
         this.moles = new MutableLiveData<>(
                 new MoleContainer(gameConfig.getNumMoles(),
                         random.nextInt(gameConfig.getNumMoles())));
+        this.misses = new MutableLiveData<>(0);
 
-        this.misses = 0;
         this.currentInterval = gameConfig.getInitialInterval();
 
         scheduler.postDelayed(spawnRunnable, gameConfig.getInitialInterval());
@@ -82,8 +83,10 @@ public class GameViewModel extends ViewModel {
         MoleContainer currentMoles = Objects.requireNonNull(moles.getValue());
 
         // Increment miss because previous mole was not hit
-        misses++;
-        if (misses >= gameConfig.getMaxMisses()) {
+        int currentMisses = Objects.requireNonNull(misses.getValue());
+        misses.setValue(currentMisses + 1);
+
+        if (misses.getValue() >= gameConfig.getMaxMisses()) {
             gameOver.setValue(true);
             scheduler.removeCallbacks(spawnRunnable);
             return;
@@ -153,7 +156,7 @@ public class GameViewModel extends ViewModel {
             throw new IllegalStateException("resetGame should only be called after game over.");
         }
 
-        misses = 0;
+        misses.setValue(0);
         currentInterval = gameConfig.getInitialInterval();
 
         score.setValue(0);
@@ -179,6 +182,10 @@ public class GameViewModel extends ViewModel {
 
     public LiveData<Boolean> getGameOver() {
         return gameOver;
+    }
+
+    public LiveData<Integer> getMisses() {
+        return misses;
     }
 
     /**
