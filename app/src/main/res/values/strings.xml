@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">whackAmole</string>
+    <string name="score_format">%d</string>
+    <string name="lives_format">%d</string>
+    <string name="timer_format">%d</string>
+    <string name="high_score_format">%d</string>
 </resources>

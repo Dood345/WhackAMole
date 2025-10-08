@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="mole_red">#FF8B0000</color>
+    <color name="mole_blue">#FF0000FF</color>
+    <color name="mole_green">#FF008000</color>
+    <color name="mole_yellow">#FFFFEB3B</color>
+    <color name="mole_purple">#FF8A2BE2</color>
 </resources>
