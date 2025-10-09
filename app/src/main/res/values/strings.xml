@@ -3,7 +3,7 @@
     <string name="score_format">%d</string>
     <string name="lives_format">%d</string>
     <string name="timer_format">%d</string>
-    <string name="high_score_format">%d</string>
+    <string name="high_score_format">High Score: %d</string>
     <string name="score">Score:</string>
     <string name="time">Time:</string>
     <string name="lives">Lives:</string>
