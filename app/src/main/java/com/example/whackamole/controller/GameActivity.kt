@@ -1,5 +1,6 @@
 package com.example.whackamole.controller
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -26,12 +27,7 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var scoreTextView: TextView
     private lateinit var livesTextView: TextView
-
-    /**
-     * List of ImageViews representing mole hills (always visible).
-     * These should have IDs like: mole_hill_0, mole_hill_1, ..., mole_hill_8
-     */
-    private val moleHillViews = mutableListOf<ImageView>()
+    private lateinit var timerTextView: TextView
 
     /**
      * List of ImageViews representing moles (visibility changes).
@@ -54,7 +50,8 @@ class GameActivity : AppCompatActivity() {
         // Initialize UI components
         scoreTextView = findViewById(R.id.score)
         livesTextView = findViewById(R.id.lives)
-
+        //TODO: Observe timer changes when added to viewmodel
+        //timerTextView = findViewById(R.id.timer)
 
         // Set up the mole views and click listeners
         setupMoleViews()
@@ -63,6 +60,11 @@ class GameActivity : AppCompatActivity() {
         viewModel.score.observe(this, Observer { score ->
             scoreTextView.text = getString(R.string.score_format, score)
         })
+
+        //TODO: Observe timer changes when added to viewmodel
+//        viewModel.missTimeLeft.observe(this, Observer { missTimeLeft ->
+//            timerTextView.text = getString(R.string.timer_format, missTimeLeft)
+//        })
 
         // Observe misses/lives changes
         viewModel.misses.observe(this, Observer { misses ->
@@ -93,7 +95,6 @@ class GameActivity : AppCompatActivity() {
      */
     private fun setupMoleViews() {
         // Hardcoded list of mole IDs - more efficient than getIdentifier()?
-        // TODO: Rand create ImageViews with these exact IDs in the XML then we uncomment
         val moleIds = listOf(
             R.id.mole_0, R.id.mole_1, R.id.mole_2,
             R.id.mole_3, R.id.mole_4, R.id.mole_5,
@@ -114,24 +115,6 @@ class GameActivity : AppCompatActivity() {
 
             moleImageViews.add(moleView)
         }
-
-        // Optional: we can initialize hill ImageViews (always visible backgrounds)
-        // we only do this if our XML has separate hill views
-//        val hillIds = listOf(
-//            R.id.mole_hill_0, R.id.mole_hill_1, R.id.mole_hill_2,
-//            R.id.mole_hill_3, R.id.mole_hill_4, R.id.mole_hill_5,
-//            R.id.mole_hill_6, R.id.mole_hill_7, R.id.mole_hill_8
-//        )
-//
-//        hillIds.forEach { hillId ->
-//            try {
-//                val hillView = findViewById<ImageView>(hillId)
-//                hillView.visibility = View.VISIBLE  // Always visible
-//                moleHillViews.add(hillView)
-//            } catch (e: Exception) {
-//                // Hill view not found - that's okay, not required
-//            }
-//        }
     }
 
     /**
@@ -186,13 +169,11 @@ class GameActivity : AppCompatActivity() {
         val finalScore = viewModel.score.value ?: 0
         val highScore = viewModel.highScore.value ?: 0
 
-        val message = if (finalScore >= highScore) {
+        val message = if (finalScore > highScore) {
             "New High Score: $finalScore!"
         } else {
             "Game Over! Score: $finalScore\nHigh Score: $highScore"
         }
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
         // Show AlertDialog with restart and exit options with kotlin lambda syntax taking place of @override
         androidx.appcompat.app.AlertDialog.Builder(this)
@@ -205,7 +186,9 @@ class GameActivity : AppCompatActivity() {
             }
             .setNegativeButton("Main Menu") { dialog, _ ->
                 dialog.dismiss()
-                finish()  // Closes this activity and returns to MainActivity
+//                finish()  // Closes this activity and returns to MainActivity
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
             .show()
     }

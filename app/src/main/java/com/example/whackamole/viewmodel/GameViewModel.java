@@ -37,14 +37,11 @@ public class GameViewModel extends ViewModel {
     private final GameRepository gameRepository;
     private final Scheduler scheduler;
     private final Runnable spawnRunnable = this::spawnMole;
-
     private final LiveData<Integer> highScore;
-
     private final MutableLiveData<Integer> score;
     private final MutableLiveData<Boolean> gameOver;
     private final MutableLiveData<MoleContainer> moles;
     private final MutableLiveData<Integer> misses;
-
     private long currentInterval;
 
     public GameViewModel(GameRepository gameRepository, Scheduler scheduler) {
@@ -131,6 +128,7 @@ public class GameViewModel extends ViewModel {
         // Update high score if needed
         if (newScore > currentHighScore) {
             gameRepository.saveHighScore(newScore);
+
         }
 
         // Pick new mole ID
