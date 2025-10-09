@@ -53,7 +53,7 @@ class GameActivity : AppCompatActivity() {
 
         // Initialize UI components
         scoreTextView = findViewById(R.id.score)
-        //livesTextView = findViewById(R.id.lives) //TODO: Uncomment when added to XML
+        livesTextView = findViewById(R.id.lives)
 
 
         // Set up the mole views and click listeners
@@ -94,26 +94,26 @@ class GameActivity : AppCompatActivity() {
     private fun setupMoleViews() {
         // Hardcoded list of mole IDs - more efficient than getIdentifier()?
         // TODO: Rand create ImageViews with these exact IDs in the XML then we uncomment
-//        val moleIds = listOf(
-//            R.id.mole_0, R.id.mole_1, R.id.mole_2,
-//            R.id.mole_3, R.id.mole_4, R.id.mole_5,
-//            R.id.mole_6, R.id.mole_7, R.id.mole_8
-//        )
-//
-//        // Initialize mole ImageViews (the ones that appear/disappear) with kotlin lambda syntax
-//        moleIds.forEachIndexed { index, moleId ->
-//            val moleView = findViewById<ImageView>(moleId)
-//
-//            // Set click listener - when clicked, notify ViewModel
-//            moleView.setOnClickListener {
-//                onMoleWhacked(index)
-//            }
-//
-//            // Initially hide all moles
-//            moleView.visibility = View.INVISIBLE
-//
-//            moleImageViews.add(moleView)
-//        }
+        val moleIds = listOf(
+            R.id.mole_0, R.id.mole_1, R.id.mole_2,
+            R.id.mole_3, R.id.mole_4, R.id.mole_5,
+            R.id.mole_6, R.id.mole_7, R.id.mole_8
+        )
+
+        // Initialize mole ImageViews (the ones that appear/disappear) with kotlin lambda syntax
+        moleIds.forEachIndexed { index, moleId ->
+            val moleView = findViewById<ImageView>(moleId)
+
+            // Set click listener - when clicked, notify ViewModel
+            moleView.setOnClickListener {
+                onMoleWhacked(index)
+            }
+
+            // Initially hide all moles
+            moleView.visibility = View.INVISIBLE
+
+            moleImageViews.add(moleView)
+        }
 
         // Optional: we can initialize hill ImageViews (always visible backgrounds)
         // we only do this if our XML has separate hill views
