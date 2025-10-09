@@ -1,5 +1,6 @@
 package com.example.whackamole.controller
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -49,7 +50,8 @@ class GameActivity : AppCompatActivity() {
         // Initialize UI components
         scoreTextView = findViewById(R.id.score)
         livesTextView = findViewById(R.id.lives)
-        timerTextView = findViewById(R.id.timer)
+        //TODO: Observe timer changes when added to viewmodel
+        //timerTextView = findViewById(R.id.timer)
 
         // Set up the mole views and click listeners
         setupMoleViews()
@@ -184,7 +186,9 @@ class GameActivity : AppCompatActivity() {
             }
             .setNegativeButton("Main Menu") { dialog, _ ->
                 dialog.dismiss()
-                finish()  // Closes this activity and returns to MainActivity
+//                finish()  // Closes this activity and returns to MainActivity
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
             .show()
     }

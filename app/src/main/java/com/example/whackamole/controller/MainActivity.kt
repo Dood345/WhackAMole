@@ -24,13 +24,15 @@ class MainActivity : AppCompatActivity() {
         MainViewModel(repository)
     }
 
+    private lateinit var highScoreTextView: TextView;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        highScoreTextView = findViewById<TextView>(R.id.high_score)
         val startButton = findViewById<Button>(R.id.start_button)
         val clearScoreButton = findViewById<Button>(R.id.clear_score_button)
-        val highScoreTextView = findViewById<TextView>(R.id.high_score)
 
         startButton.setOnClickListener {
             val intent = Intent(this, GameActivity::class.java)
@@ -45,4 +47,11 @@ class MainActivity : AppCompatActivity() {
             highScoreTextView.text = "High Score: $highScore"
         })
     }
+
+//    override fun onResume() {
+//        super.onResume()
+//        mainViewModel.highScore.observe(this, Observer { highScore ->
+//            highScoreTextView.text = "High Score: $highScore"
+//        })
+//    }
 }

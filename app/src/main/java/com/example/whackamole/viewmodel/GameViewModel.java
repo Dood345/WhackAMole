@@ -128,6 +128,7 @@ public class GameViewModel extends ViewModel {
         // Update high score if needed
         if (newScore > currentHighScore) {
             gameRepository.saveHighScore(newScore);
+
         }
 
         // Pick new mole ID
