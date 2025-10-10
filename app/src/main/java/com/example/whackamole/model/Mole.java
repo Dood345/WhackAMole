@@ -53,10 +53,20 @@ public final class Mole {
         return visible;
     }
 
+    /**
+     * Get the color of the mole
+     *
+     * @return specific MoleColor
+     */
     public MoleColor getColor() {
         return color;
     }
 
+    /**
+     * String constructor for moles
+     * 
+     * @return string representing mole
+     */
     @Override
     @NonNull
     public String toString() {

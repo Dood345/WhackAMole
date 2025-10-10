@@ -14,20 +14,19 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * GameViewModel manages the core logic for the Whack-a-Mole game.
- * It handles mole spawning, scoring, misses, game-over state,
- * and high score persistence via a GameRepository.
+ * Manages the core logic, state, and data for the Whack-a-Mole game screen.
  * <p>
- * LiveData exposed by this ViewModel:
- * - LiveData<MoleContainer> getMoles() – current immutable MoleContainer
- * - LiveData<Integer> getScore() – current player score
- * - LiveData<Integer> getHighScore() – high score (persisted after destruction of object)
- * - LiveData<Boolean> getGameOver() – game-over state
- * - LiveData<Integer> getMisses() - current number of misses
- * <p>
- * Public Functions:
- * - void hitMole(int moleId) – register a mole tap
- * - void resetGame() – restart the game on the same screen
+ * This ViewModel is responsible for:
+ * <ul>
+ *   <li>Starting and stopping the game loop that spawns moles.</li>
+ *   <li>Tracking the player's score, misses, and the current high score.</li>
+ *   <li>Handling user interactions, such as hitting a mole.</li>
+ *   <li>Managing the game-over state.</li>
+ *   <li>Persisting the high score using a {@link GameRepository}.</li>
+ *   <li>Resetting the game to a fresh state.</li>
+ * </ul>
+ * It exposes game state to the UI (the Activity) via {@link LiveData} objects, ensuring that the
+ * UI is always in sync with the underlying game data and that the logic is decoupled from the view.
  */
 public class GameViewModel extends ViewModel {
 
@@ -44,10 +43,23 @@ public class GameViewModel extends ViewModel {
     private final MutableLiveData<Integer> misses;
     private long currentInterval;
 
+    /**
+     * Constructs a GameViewModel with a default game configuration.
+     *
+     * @param gameRepository The repository for handling high score persistence.
+     * @param scheduler      The scheduler for managing timed events like mole spawning.
+     */
     public GameViewModel(GameRepository gameRepository, Scheduler scheduler) {
         this(gameRepository, scheduler, GameConfig.DEFAULT);
     }
 
+    /**
+     * Constructs a GameViewModel with a custom game configuration.
+     *
+     * @param gameRepository The repository for handling high score persistence.
+     * @param scheduler      The scheduler for managing timed events.
+     * @param gameConfig     The configuration defining game rules (e.g., number of moles, miss limit).
+     */
     public GameViewModel(GameRepository gameRepository, Scheduler scheduler,
                          GameConfig gameConfig) {
         this.gameConfig = gameConfig;
@@ -69,7 +81,12 @@ public class GameViewModel extends ViewModel {
     }
 
     /**
-     * Spawns a mole at a new random position. If this runs, it counts as a miss.
+     * Core game loop action. This method is responsible for advancing the game state when a mole is missed.
+     * It increments the miss counter, checks for game-over conditions, and then selects a new mole
+     * to be visible. It also dynamically adjusts the spawn interval to increase difficulty.
+     * Finally, it schedules the next call to itself.
+     *
+     * @throws IllegalStateException if called after the game is already over.
      */
     private void spawnMole() {
         boolean isGameOver = Objects.requireNonNull(gameOver.getValue());
@@ -105,7 +122,12 @@ public class GameViewModel extends ViewModel {
     }
 
     /**
-     * Called when the user taps a mole. Updates score, high score, and schedules next spawn.
+     * Processes a user's tap on a mole.
+     * If the correct mole is hit, the score is incremented, the high score is updated if necessary,
+     * and the game loop is reset for the next mole. If the wrong mole is hit, the action is ignored.
+     *
+     * @param moleId The ID of the mole that was tapped.
+     * @throws IllegalStateException if called after the game is already over.
      */
     public void hitMole(int moleId) {
         boolean isGameOver = Objects.requireNonNull(gameOver.getValue());
@@ -146,7 +168,11 @@ public class GameViewModel extends ViewModel {
     }
 
     /**
-     * Resets the game and starts a new session. Only callable after game over.
+     * Resets the game to its initial state, allowing the player to start a new session.
+     * This method should only be called after the game is over.
+     * It resets the score, misses, and mole positions, and restarts the spawn scheduler.
+     *
+     * @throws IllegalStateException if called while the game is still active.
      */
     public void resetGame() {
         boolean isGameOver = Objects.requireNonNull(gameOver.getValue());
@@ -165,29 +191,50 @@ public class GameViewModel extends ViewModel {
         scheduler.postDelayed(spawnRunnable, currentInterval);
     }
 
-    // LiveData getters
+    /**
+     * @return A LiveData stream of the {@link MoleContainer}, which holds the state of all moles.
+     * The UI observes this to draw the moles on the screen.
+     */
     public LiveData<MoleContainer> getMoles() {
         return moles;
     }
 
+    /**
+     * @return A LiveData stream of the current score.
+     * The UI observes this to display the player's score in real-time.
+     */
     public LiveData<Integer> getScore() {
         return score;
     }
 
+    /**
+     * @return A LiveData stream of the persisted high score.
+     * The UI observes this to display the all-time high score.
+     */
     public LiveData<Integer> getHighScore() {
         return highScore;
     }
 
+    /**
+     * @return A LiveData stream indicating whether the game is over.
+     * The UI observes this to show or hide game-over screens or dialogs.
+     */
     public LiveData<Boolean> getGameOver() {
         return gameOver;
     }
 
+    /**
+     * @return A LiveData stream of the current number of misses.
+     * The UI observes this to show the player how many misses they have left.
+     */
     public LiveData<Integer> getMisses() {
         return misses;
     }
 
     /**
-     * Ends the game and stops the loop.
+     * This method is called when the ViewModel is about to be destroyed.
+     * It cleans up resources by removing any pending callbacks from the scheduler,
+     * preventing memory leaks and stopping the game loop after the ViewModel is no longer in use.
      */
     @Override
     protected void onCleared() {

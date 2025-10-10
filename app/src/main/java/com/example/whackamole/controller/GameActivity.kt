@@ -18,24 +18,45 @@ import com.example.whackamole.util.real.AndroidScheduler
 import com.example.whackamole.viewmodel.GameViewModel
 
 /**
- * GameActivity controller that manages the Whack-a-Mole game UI.
- * Observes the GameViewModel and updates the view accordingly.
+ * The `GameActivity` class serves as the controller for the Whack-a-Mole game UI.
+ * It observes the `GameViewModel` and updates the view in response to data changes.
+ * This class manages the game's lifecycle, including initializing UI components,
+ * handling user interactions, and displaying game state information such as score,
+ * lives, and mole visibility.
  *
- * @author Controller Team
+ * @author Jesutofunmi Obimakinde, Rand Roman, Daniel Ripley
  */
 class GameActivity : AppCompatActivity() {
 
+    /**
+     * The `scoreTextView` displays the player's current score.
+     */
     private lateinit var scoreTextView: TextView
+
+    /**
+     * The `livesTextView` displays the number of lives remaining.
+     */
     private lateinit var livesTextView: TextView
+
+    /**
+     * The `timerTextView` displays the time remaining in the game.
+     *
+     * TODO: Observe timer changes when added to the view model.
+     */
     private lateinit var timerTextView: TextView
 
     /**
-     * List of ImageViews representing moles (visibility changes).
-     * These should have IDs like: mole_0, mole_1, ..., mole_8
-     * They could be layered on top of the hill views (try FrameLayout or RelativeLayout)
+     * A list of `ImageView` objects representing the moles. The visibility of these
+     * views changes as moles appear and disappear. The mole views are identified by
+     * IDs such as `mole_0`, `mole_1`, and so on, up to `mole_8`. They can be layered
+     * on top of hill views using a `FrameLayout` or `RelativeLayout`.
      */
     private val moleImageViews = mutableListOf<ImageView>()
 
+    /**
+     * The `viewModel` provides the data for the game and handles the game logic.
+     * It is lazily initialized to ensure that it is created only when needed.
+     */
     private val viewModel: GameViewModel by lazy {
         val prefs = getSharedPreferences("WhackAMolePrefs", MODE_PRIVATE)
         val repository = SharedPrefGameRepository(prefs)
@@ -43,6 +64,14 @@ class GameActivity : AppCompatActivity() {
         GameViewModel(repository, scheduler)
     }
 
+    /**
+     * Called when the activity is first created. This is where you should do all of your normal
+     * static set up: create views, bind data to lists, etc.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being
+     * shut down then this Bundle contains the data it most recently supplied in
+     * onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -62,9 +91,9 @@ class GameActivity : AppCompatActivity() {
         })
 
         //TODO: Observe timer changes when added to viewmodel
-//        viewModel.missTimeLeft.observe(this, Observer { missTimeLeft ->
-//            timerTextView.text = getString(R.string.timer_format, missTimeLeft)
-//        })
+//      viewModel.missTimeLeft.observe(this, Observer { missTimeLeft ->
+//          timerTextView.text = getString(R.string.timer_format, missTimeLeft)
+//      })
 
         // Observe misses/lives changes
         viewModel.misses.observe(this, Observer { misses ->
@@ -89,12 +118,12 @@ class GameActivity : AppCompatActivity() {
     }
 
     /**
-     * Initializes the list of mole ImageViews and sets their click listeners.
-     * Assumes your XML has ImageViews with IDs: mole_0, mole_1, ..., mole_8
-     * and optionally mole_hill_0, mole_hill_1, ..., mole_hill_8 for backgrounds.
+     * Initializes the list of mole `ImageView`s and sets their click listeners.
+     * This function assumes that the XML layout contains `ImageView`s with IDs
+     * `mole_0` through `mole_8`.
      */
     private fun setupMoleViews() {
-        // Hardcoded list of mole IDs - more efficient than getIdentifier()?
+        // Hardcoded list of mole IDs - more efficient than getIdentifier()
         val moleIds = listOf(
             R.id.mole_0, R.id.mole_1, R.id.mole_2,
             R.id.mole_3, R.id.mole_4, R.id.mole_5,
@@ -118,20 +147,21 @@ class GameActivity : AppCompatActivity() {
     }
 
     /**
-     * Called when a mole ImageView is clicked.
-     * Delegates to the ViewModel to handle the hit logic.
+     * Called when a mole `ImageView` is clicked. This function delegates the hit logic
+     * to the `GameViewModel`.
      *
-     * @param moleId The ID of the mole that was clicked (0-8)
+     * @param moleId The ID of the mole that was clicked (0-8).
      */
     private fun onMoleWhacked(moleId: Int) {
         viewModel.hitMole(moleId)
     }
 
     /**
-     * Updates a single mole's ImageView based on its state (visible and color).
-     * This is called for ALL 9 moles every time the MoleContainer changes.
+     * Updates a single mole's `ImageView` based on its state, including its visibility
+     * and color. This function is called for all nine moles each time the `MoleContainer`
+     * changes.
      *
-     * @param mole The mole object containing id, visibility, and color
+     * @param mole The `Mole` object containing the ID, visibility, and color information.
      */
     private fun updateMoleView(mole: Mole) {
         if (moleImageViews.isEmpty()) {
@@ -163,7 +193,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     /**
-     * Called when the game is over. Shows final score and options to restart.
+     * Called when the game is over. This function displays the final score and provides
+     * options to restart the game or return to the main menu.
      */
     private fun endGame() {
         val finalScore = viewModel.score.value ?: 0
@@ -186,16 +217,16 @@ class GameActivity : AppCompatActivity() {
             }
             .setNegativeButton("Main Menu") { dialog, _ ->
                 dialog.dismiss()
-//                finish()  // Closes this activity and returns to MainActivity
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                finish()  // Closes this activity and returns to MainActivity
+                // val intent = Intent(this, MainActivity::class.java)
+                // startActivity(intent)
             }
             .show()
     }
 
     /**
-     * Restarts the game by calling resetGame() on the ViewModel.
-     * Connect this to a "Restart" button in your UI.
+     * Restarts the game by calling the `resetGame` function on the `GameViewModel`.
+     * This function can be connected to a "Restart" button in the UI.
      */
     fun restartGame() {
         viewModel.resetGame()
